@@ -3,24 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\RFIDData;
+use App\Models\Robot; // pastikan model Robot sudah dibuat
 
 class RFIDController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi jika diperlukan
+        // Validasi data
         $request->validate([
-            'rfid_tag' => 'required|string',
-            'timestamp' => 'required|date',
+            'name' => 'required|string',
+            'ip' => 'required|ip',
+            'location' => 'required|string',
+            'tag' => 'required|string',
         ]);
 
-        // Simpan data ke database
-        $rfidData = new RFIDData();
-        $rfidData->tag = $request->input('rfid_tag');
-        $rfidData->timestamp = $request->input('timestamp');
-        $rfidData->save();
+        // Simpan ke database (tabel robots)
+        Robot::create([
+            'name' => $request->name,
+            'ip' => $request->ip,
+            'location' => $request->location,
+            'tag' => $request->tag,
+        ]);
 
-        return response()->json(['message' => 'Data RFID berhasil disimpan']);
+        return response()->json(['message' => 'Data RFID berhasil disimpan'], 201);
     }
 }

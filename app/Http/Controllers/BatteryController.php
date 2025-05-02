@@ -8,18 +8,40 @@ use Illuminate\Support\Facades\Log;
 
 class BatteryController extends Controller
 {
-    // Menampilkan semua data robot
-    public function index()
+    // API: Menyimpan data baterai dari ESP32
+    public function apiStore(Request $request)
     {
-        $batteries = Battery::all(); // Ambil semua data robot
-        return view('dashboard.battery', compact('batteries')); // Kirim ke view
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'ip' => 'required|ip',
+            'battery' => 'required|numeric',
+        ]);
+
+        try {
+            Battery::create([
+                'name' => $request->name,
+                'ip' => $request->ip,
+                'battery' => $request->battery,
+            ]);
+
+            return response()->json(['message' => 'Data baterai berhasil disimpan'], 200);
+        } catch (\Exception $e) {
+            Log::error('Gagal simpan data baterai: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menyimpan data baterai'], 500);
+        }
     }
 
-    // Menyimpan data robot baru
+    // Web: Menampilkan semua data baterai
+    public function index()
+    {
+        $batteries = Battery::all();
+        return view('dashboard.battery', compact('batteries'));
+    }
+
+    // Web: Menyimpan data baterai baru (form manual)
     public function store(Request $request)
     {
-        // Log untuk debugging
-        Log::info('Store method called', $request->all());
+        Log::info('Store (Web) called', $request->all());
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -33,25 +55,15 @@ class BatteryController extends Controller
                 'ip' => $request->ip,
                 'battery' => $request->battery,
             ]);
+
+            return redirect()->route('battery')->with('success', 'Data robot berhasil ditambahkan.');
         } catch (\Exception $e) {
-            // Log error jika gagal menyimpan ke database
             Log::error('Error saving robot data: ' . $e->getMessage());
             return redirect()->route('battery')->with('error', 'Gagal menambahkan data robot: ' . $e->getMessage());
         }
-
-        return redirect()->route('battery')->with('success', 'Data robot berhasil ditambahkan.');
     }
 
-    // Menghapus data robot
-    public function destroy($id)
-    {
-        $battery = Battery::findOrFail($id);
-        $battery->delete();
-
-        return redirect()->route('battery')->with('success', 'Data robot berhasil dihapus.');
-    }
-
-    // Mengupdate data robot
+    // Web: Mengupdate data baterai
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -68,5 +80,14 @@ class BatteryController extends Controller
         ]);
 
         return redirect()->route('battery')->with('success', 'Data robot berhasil diperbarui.');
+    }
+
+    // Web: Menghapus data baterai
+    public function destroy($id)
+    {
+        $battery = Battery::findOrFail($id);
+        $battery->delete();
+
+        return redirect()->route('battery')->with('success', 'Data robot berhasil dihapus.');
     }
 }

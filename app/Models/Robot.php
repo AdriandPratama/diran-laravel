@@ -9,5 +9,5 @@ class Robot extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'ip', 'location'];
+    protected $fillable = ['name', 'ip', 'location', 'tag'];
 }

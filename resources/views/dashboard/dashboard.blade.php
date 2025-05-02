@@ -2,6 +2,14 @@
 @section('title', 'Dashboard')
 @section('content')
 
+<!-- Pastikan untuk menambahkan link Animate.css -->
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Tambahkan Font Awesome untuk ikon robot -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
 <div class="page-heading">
     <h3>Dashboard</h3>
 </div>
@@ -25,7 +33,6 @@
     updateClock();
 </script>
 
-<!-- Tampilkan pesan error jika validasi gagal -->
 @if ($errors->any())
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <ul>
@@ -37,273 +44,246 @@
 </div>
 @endif
 
-<!-- Battery and RFID Cards -->
-<div class="col-10 col-lg-8 mx-auto">
-    <div class="row justify-content-center">
-        <!-- Battery Card with Progress Bar -->
-        <div class="col-6 col-md-5 mb-4">
-            <a href="{{ route('battery') }}" class="text-decoration-none">
-                <div class="card h-100 shadow hover-effect">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="iconly-boldBattery me-3" style="font-size: 2.5rem; color: green;"></i>
-                            <h5 class="text-muted mb-0">Battery Status</h5>
-                        </div>
-                        <h4 class="font-extrabold">85%</h4>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-success" style="width: 85%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- RFID Card -->
-        <div class="col-6 col-md-5 mb-4">
-            <a href="{{ route('location') }}" class="text-decoration-none">
-                <div class="card h-100 shadow hover-effect">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="iconly-boldScan me-3" style="font-size: 2.5rem; color: blue;"></i>
-                            <h5 class="text-muted mb-0">Location</h5>
-                        </div>
-                        <h4 class="font-extrabold">Connected</h4>
-                    </div>
-                </div>
-            </a>
-        </div>
+{{-- Tabel Gabungan --}}
+<div class="card mb-5 animate__animated animate__fadeIn">
+    <div class="card-header bg-primary text-white">
+        Data Robot
     </div>
-</div>
-
-<!-- Data Location -->
-<div class="mt-5 w-100">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Data Lokasi Robot</h4>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLocationModal">Tambah Lokasi</button>
-    </div>
-
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>No</th>
-                <th>Nama Robot</th>
-                <th>IP Address</th>
-                <th>Lokasi</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($robots as $index => $robot)
+    <div class="card-body">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-dark">
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $robot->name }}</td>
-                    <td>{{ $robot->ip }}</td>
-                    <td>{{ $robot->location }}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editLocationModal{{ $robot->id }}">Edit</button>
-                        <form action="{{ route('location.destroy', $robot->id) }}" method="POST" class="d-inline"
-                              onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger">Hapus</button>
-                        </form>
-                    </td>
+                    <th>Nama Robot</th>
+                    <th>IP</th>
+                    <th>Lokasi</th>
+                    <th>RFID Tag</th>
+                    <th>Battery (%)</th>
                 </tr>
-
-                <!-- Modal Edit Location -->
-                <div class="modal fade" id="editLocationModal{{ $robot->id }}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <form action="{{ route('location.update', $robot->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5>Edit Data Lokasi</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label>Nama Robot</label>
-                                        <input type="text" name="name" class="form-control" value="{{ $robot->name }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>IP Address</label>
-                                        <input type="text" name="ip" class="form-control" value="{{ $robot->ip }}" placeholder="Contoh: 192.168.1.1" required>
-                                    </div>
-                                    @error('ip')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                    <div class="mb-3">
-                                        <label>Lokasi</label>
-                                        <input type="text" name="location" class="form-control" value="{{ $robot->location }}" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-success">Simpan</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            </thead>
+            <tbody>
+                @forelse ($mergedData as $data)
+                    <tr>
+                        <td>{{ $data['name'] }}</td>
+                        <td>{{ $data['ip'] }}</td>
+                        <td>{{ $data['location'] }}</td>
+                        <td>{{ $data['tag'] ?? '-' }}</td>
+                        <td>
+                            @php
+                                $batteryPercentage = $data['battery'];
+                                $barColor = 'bg-success';
+                                if ($batteryPercentage < 30) {
+                                    $barColor = 'bg-danger';
+                                } elseif ($batteryPercentage < 60) {
+                                    $barColor = 'bg-warning';
+                                }
+                            @endphp
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">{{ $batteryPercentage }}%</span>
+                                <div class="progress flex-grow-1" style="height: 10px;">
+                                    <div class="progress-bar {{ $barColor }} progress-bar-striped progress-bar-animated"
+                                        style="width: {{ $batteryPercentage }}%; transition: width 1s ease-in-out;"></div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <tr><td colspan="5" class="text-center">Tidak ada data lokasi.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-<!-- Modal Add Location -->
-<div class="modal fade" id="addLocationModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form action="{{ route('location.store') }}" method="POST">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Tambah Lokasi Robot</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Nama Robot</label>
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>IP Address</label>
-                        <input type="text" name="ip" class="form-control" placeholder="Contoh: 192.168.1.1" required>
-                    </div>
-                    @error('ip')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                    <div class="mb-3">
-                        <label>Lokasi</label>
-                        <input type="text" name="location" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Tambah</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                </div>
-            </div>
-        </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center">Tidak ada data gabungan.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Data Battery -->
-<div class="mt-5 w-100">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Data Kapasitas Battery</h4>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBatteryModal">Tambah Battery</button>
+{{-- Tabel Robots --}}
+<div class="card mb-4 animate__animated animate__fadeIn">
+    <div class="card-header bg-success text-white">
+        Data Lokasi Robot
     </div>
-
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>No</th>
-                <th>Nama Robot</th>
-                <th>IP Address</th>
-                <th>Kapasitas Battery</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($batteries as $index => $battery)
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-success">
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $battery->name }}</td>
-                    <td>{{ $battery->ip }}</td>
-                    <td>{{ $battery->battery }}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editBatteryModal{{ $battery->id }}">Edit</button>
-                        <form action="{{ route('battery.destroy', $battery->id) }}" method="POST" class="d-inline"
-                              onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger">Hapus</button>
-                        </form>
-                    </td>
+                    <th>Nama Robot</th>
+                    <th>IP</th>
+                    <th>Lokasi</th>
+                    <th>RFID Tag</th>
                 </tr>
+            </thead>
+            <tbody>
+                @forelse ($robots as $robot)
+                    <tr>
+                        <td>{{ $robot->name }}</td>
+                        <td>{{ $robot->ip }}</td>
+                        <td>{{ $robot->location }}</td>
+                        <td>{{ $robot->tag ?? '-' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada data robot.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                <!-- Modal Edit Battery -->
-                <div class="modal fade" id="editBatteryModal{{ $battery->id }}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <form action="{{ route('battery.update', $battery->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5>Edit Kapasitas Battery</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label>Nama Robot</label>
-                                        <input type="text" name="name" class="form-control" value="{{ $battery->name }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>IP Address</label>
-                                        <input type="text" name="ip" class="form-control" value="{{ $battery->ip }}" placeholder="Contoh: 192.168.1.1" required>
-                                    </div>
-                                    @error('ip')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                    <div class="mb-3">
-                                        <label>Kapasitas Battery</label>
-                                        <input type="text" name="battery" class="form-control" value="{{ $battery->battery }}" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-success">Simpan</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+{{-- Tabel Battery --}}
+<div class="card animate__animated animate__fadeIn">
+    <div class="card-header bg-warning">
+        <strong>Data Battery Robot</strong>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped align-middle table-hover">
+            <thead class="table-warning">
+                <tr>
+                    <th>Nama Robot</th>
+                    <th>IP</th>
+                    <th>Battery (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($batteries as $battery)
+                    @php
+                        $percentage = $battery->battery;
+                        $barColor = 'bg-success';
+                        if ($percentage < 30) {
+                            $barColor = 'bg-danger';
+                        } elseif ($percentage < 60) {
+                            $barColor = 'bg-warning';
+                        }
+                    @endphp
+                    <tr>
+                        <td>{{ $battery->name }}</td>
+                        <td>{{ $battery->ip }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">{{ $percentage }}%</span>
+                                <div class="progress flex-grow-1" style="height: 10px;">
+                                    <div class="progress-bar {{ $barColor }} progress-bar-striped progress-bar-animated"
+                                        style="width: {{ $percentage }}%; transition: width 1s ease-in-out;"></div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <tr><td colspan="5" class="text-center">Tidak ada data battery.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-<!-- Modal Add Battery -->
-<div class="modal fade" id="addBatteryModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form action="{{ route('battery.store') }}" method="POST">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Tambah Kapasitas Battery</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Nama Robot</label>
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>IP Address</label>
-                        <input type="text" name="ip" class="form-control" placeholder="Contoh: 192.168.1.1" required>
-                    </div>
-                    @error('ip')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                    <div class="mb-3">
-                        <label>Kapasitas Battery</label>
-                        <input type="text" name="battery" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Tambah</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                </div>
-            </div>
-        </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada data baterai.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Pastikan footer terlihat -->
+<!-- Gaya Segi 8 -->
+<style>
+    .octagon-track {
+        position: relative;
+        width: 100%;
+        max-width: 750px;
+        height: 450px;
+        margin: 60px auto;
+    }
+
+    .oct-point {
+        position: absolute;
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        background-color: #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .oct-point:hover {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+
+    .robot-icon {
+        position: absolute;
+        top: -20px;
+        font-size: 20px;
+        color: #198754;
+    }
+
+    .tooltip-text {
+        display: none;
+        position: absolute;
+        top: 85%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #343a40;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        z-index: 10;
+    }
+
+    .oct-point:hover .tooltip-text {
+        display: block;
+    }
+
+    /* Posisi segi delapan */
+    .pos-A { top: 0%;   left: 85%; }
+    .pos-B { top: 30%;  left: 100%; }
+    .pos-C { top: 75%;  left: 100%; }
+    .pos-D { top: 100%;  left: 85%; }
+    .pos-E { top: 100%;  left: 5%; }
+    .pos-F { top: 75%;  left: -10%; }
+    .pos-G { top: 30%;  left: -10%; }
+    .pos-H { top: 0%;  left: 5%; }
+
+    @media (max-width: 768px) {
+        .octagon-track {
+            transform: scale(0.85);
+        }
+    }
+</style>
+
+<div class="card animate__animated animate__fadeIn mb-5">
+    <div class="card-header bg-info text-white">
+        <strong>Lintasan Segi Delapan Robot</strong>
+    </div>
+    <div class="card-body">
+        <div class="octagon-track">
+
+
+
+            @php
+                $trackData = [];
+                foreach ($robots as $robot) {
+                    $lokasi = strtoupper($robot->location); // Lokasi A - H
+                    if (!isset($trackData[$lokasi])) {
+                        $trackData[$lokasi] = [];
+                    }
+                    $trackData[$lokasi][] = $robot->name;
+                }
+            @endphp
+
+            @foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as $point)
+                <div class="oct-point pos-{{ $point }}">
+                    {{ $point }}
+                    @if (!empty($trackData[$point]))
+                        <i class="fas fa-robot robot-icon"></i>
+                        <div class="tooltip-text">{{ implode(', ', $trackData[$point]) }}</div>
+                    @endif
+                </div>
+            @endforeach
+
+        </div>
+    </div>
+</div>
+
 <div style="margin-top: 50px;"></div>
 
 @endsection

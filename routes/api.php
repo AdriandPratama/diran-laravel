@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RFIDController;
+use App\Http\Controllers\BatteryController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/rfid-data', [RFIDController::class, 'store']);
+Route::post('/rfid-location', [RFIDController::class, 'apiStore']);
+Route::post('/rfid-battery', [BatteryController::class, 'apiStore']);

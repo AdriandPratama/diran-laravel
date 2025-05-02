@@ -7,7 +7,7 @@
         </div>
         <div class="float-end">
             <p>Crafted with <span></i></span> by <a
-                   >WEB APP BATTERY AND MONITORING SYSYTEM</a></p>
+                   >Adriand</a></p>
         </div>
     </div>
 </footer>
