@@ -4,20 +4,6 @@
 
 @section('content')
 
-<!-- Tambahkan Bootstrap -->
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .modal-backdrop {
-            z-index: 1040 !important;
-        }
-        .modal {
-            z-index: 1050 !important;
-        }
-    </style>
-</head>
-
 <div class="page-heading">
     <h3>Battery</h3>
 </div>
@@ -167,6 +153,16 @@
         </div>
     @endif
 @endauth
+
+<!-- CSS untuk Modal -->
+<style>
+    .modal-backdrop {
+        z-index: 1040 !important;
+    }
+    .modal {
+        z-index: 1050 !important;
+    }
+</style>
 
 <!-- Tambahkan Script Debug -->
 <script>

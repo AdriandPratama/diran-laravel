@@ -4,20 +4,6 @@
 
 @section('content')
 
-<!-- Tambahkan Bootstrap -->
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .modal-backdrop {
-            z-index: 1040 !important;
-        }
-        .modal {
-            z-index: 1050 !important;
-        }
-    </style>
-</head>
-
 <div class="page-heading">
     <h3>Location</h3>
 </div>
@@ -57,8 +43,7 @@
                 <th>Nama Robot</th>
                 <th>IP Address</th>
                 <th>Lokasi</th>
-                <th>Tag RFID</th> <!-- Di bagian <thead> -->
-
+                <th>Tag RFID</th>
                 @auth
                     @if(Auth::user()->role === 'admin')
                         <th>Aksi</th>
@@ -74,12 +59,10 @@
                     <td>{{ $robot->ip }}</td>
                     <td>{{ $robot->location }}</td>
                     <td>{{ $robot->tag ?? '-' }}</td>
-
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <td>
                                 <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $robot->id }}">Edit</button>
-
                                 <form action="{{ route('location.destroy', $robot->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                     @csrf
                                     @method('DELETE')
@@ -120,7 +103,6 @@
                                                 <label>Tag RFID</label>
                                                 <input type="text" name="tag" class="form-control" value="{{ $robot->tag }}">
                                             </div>
-
                                         </div>
                                         <div class="modal-footer">
                                             <button type="submit" class="btn btn-success">Simpan Perubahan</button>
@@ -170,7 +152,6 @@
                                 <label>Tag RFID</label>
                                 <input type="text" name="tag" class="form-control" value="{{ old('tag') }}">
                             </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Tambah</button>
@@ -182,6 +163,16 @@
         </div>
     @endif
 @endauth
+
+<!-- CSS untuk Modal -->
+<style>
+    .modal-backdrop {
+        z-index: 1040 !important;
+    }
+    .modal {
+        z-index: 1050 !important;
+    }
+</style>
 
 <!-- Tambahkan Script Debug -->
 <script>

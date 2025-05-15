@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BatteryController;
+use App\Http\Controllers\ProfileController; // You'll need to create this controller
 
 /*
 |--------------------------------------------------------------------------
@@ -40,3 +41,6 @@ Route::get('/battery', [BatteryController::class, 'index'])->name('battery');
 Route::post('/battery', [BatteryController::class, 'store'])->name('battery.store');
 Route::put('/battery/update/{id}', [BatteryController::class, 'update'])->name('battery.update');
 Route::delete('/battery/{id}', [BatteryController::class, 'destroy'])->name('battery.destroy');
+
+// Profile route
+Route::get('profile', [ProfileController::class, 'show'])->name('profile')->middleware('auth');
