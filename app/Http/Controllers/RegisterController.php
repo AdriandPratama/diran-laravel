@@ -9,11 +9,17 @@ use App\Models\User;
 
 class RegisterController extends Controller
 {
+    /**
+     * Menampilkan halaman registrasi
+     */
     public function index()
     {
         return view('auth.register');
     }
 
+    /**
+     * Proses penyimpanan user baru
+     */
     public function store(Request $request)
     {
         $this->validator($request->all())->validate();
@@ -32,7 +38,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:dns', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:5'],
-            'role' => ['required', 'in:admin,user'], // validasi role
+            // Hapus validasi role karena role akan di-set otomatis
         ]);
     }
 
@@ -45,7 +51,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'],
+            'role' => 'user', // Set default role di sini
         ]);
     }
 }

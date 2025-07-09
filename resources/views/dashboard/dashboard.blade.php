@@ -45,7 +45,7 @@
 @endif
 
 {{-- Tabel Gabungan --}}
-<div class="card mb-5 animate__animated animate__fadeIn">
+{{--<div class="card mb-5 animate__animated animate__fadeIn">
     <div class="card-header bg-primary text-white">
         Data Robot
     </div>
@@ -85,7 +85,7 @@
                                 </div>
                             </div>
                         </td>
-                    </tr>
+
                 @empty
                     <tr>
                         <td colspan="4" class="text-center">Tidak ada data gabungan.</td>
@@ -97,7 +97,7 @@
 </div>
 
 {{-- Tabel Robots --}}
-<div class="card mb-4 animate__animated animate__fadeIn">
+{{--<div class="card mb-4 animate__animated animate__fadeIn">
     <div class="card-header bg-success text-white">
         Data Lokasi Robot
     </div>
@@ -109,6 +109,8 @@
                     <th>IP</th>
                     <th>Lokasi</th>
                     <th>RFID Tag</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Terakhir Diperbarui</th>
                 </tr>
             </thead>
             <tbody>
@@ -118,6 +120,8 @@
                         <td>{{ $robot->ip }}</td>
                         <td>{{ $robot->location }}</td>
                         <td>{{ $robot->tag ?? '-' }}</td>
+                        <td>{{ $robot->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
+                        <td>{{ $robot->updated_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
                     </tr>
                 @empty
                     <tr>
@@ -130,7 +134,7 @@
 </div>
 
 {{-- Tabel Battery --}}
-<div class="card animate__animated animate__fadeIn">
+{{--<div class="card animate__animated animate__fadeIn">
     <div class="card-header bg-warning">
         <strong>Data Battery Robot</strong>
     </div>
@@ -141,6 +145,8 @@
                     <th>Nama Robot</th>
                     <th>IP</th>
                     <th>Battery (%)</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Terakhir Diperbarui</th>
                 </tr>
             </thead>
             <tbody>
@@ -165,6 +171,8 @@
                                         style="width: {{ $percentage }}%; transition: width 1s ease-in-out;"></div>
                                 </div>
                             </div>
+                        <td>{{ $battery->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
+                        <td>{{ $battery->updated_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
                         </td>
                     </tr>
                 @empty
@@ -176,7 +184,9 @@
         </table>
     </div>
 </div>
+--}}
 
+{{--
 <!-- Gaya Segi 8 -->
 <style>
     .octagon-track {
@@ -284,6 +294,38 @@
     </div>
 </div>
 
+--}}
+
+<div class="card animate__animated animate__fadeIn">
+    <div class="card-header bg-success text-white">
+        <strong>Lintasan AGV</strong>
+    </div>
+   <div class="card-body">
+        <img src="{{ asset('template/assets/images/track.png') }}" alt="Lintasan AGV" class="img-fluid" />
+
+    </div>
+</div>
+
+
+<!-- Tampilkan Informasi Data Gabungan Robot -->
+<div class="card animate__animated animate__fadeIn">
+    <div class="card-header bg-success text-white">
+        <strong>Informasi Terbaru Robot</strong>
+    </div>
+    <div class="card-body">
+        @foreach ($mergedData as $data)
+            <div class="p-4 border rounded-lg shadow mb-4">
+                <p><strong>Robot:</strong> {{ $data['name'] }}</p>
+                <p><strong>IP:</strong> {{ $data['ip'] }}</p>
+                <p><strong>Posisi:</strong> {{ $data['location'] }}</p>
+                <p><strong>Tag RFID:</strong> {{ $data['tag'] }}</p>
+                <p><strong>Battery:</strong> {{ $data['battery'] }}%</p>
+            </div>
+        @endforeach
+    </div>
+</div>
+
 <div style="margin-top: 50px;"></div>
+
 
 @endsection

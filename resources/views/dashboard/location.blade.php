@@ -44,6 +44,8 @@
                 <th>IP Address</th>
                 <th>Lokasi</th>
                 <th>Tag RFID</th>
+                <th>Tanggal Dibuat</th>
+                <th>Terakhir Diperbarui</th>
                 @auth
                     @if(Auth::user()->role === 'admin')
                         <th>Aksi</th>
@@ -59,6 +61,8 @@
                     <td>{{ $robot->ip }}</td>
                     <td>{{ $robot->location }}</td>
                     <td>{{ $robot->tag ?? '-' }}</td>
+                    <td>{{ $robot->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
+                    <td>{{ $robot->updated_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <td>

@@ -66,32 +66,39 @@
 
             <form method="post" action="{{ route('login.store') }}">
                 @csrf
-                @if (session()->has('loginError'))
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    {{ session('loginError') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
+
+                {{-- Notifikasi sukses reset password --}}
+                @if (session('status'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('status') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
+
+                @if (session()->has('loginError'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('loginError') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="text" id="email" name="email" class="form-control @error('email') is invalid
-                    @enderror form-control-xl"
+                    <input type="text" id="email" name="email" class="form-control @error('email') is invalid @enderror form-control-xl"
                         placeholder="Email">
                     <div class="form-control-icon">
                         <i class="bi bi-person"></i>
                     </div>
                     @error('email')
-                        <small> class="btn btn-danger">{{ $message }}</small>
+                        <small class="btn btn-danger">{{ $message }}</small>
                     @enderror
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" id="password" name="password" class="form-control @error('password') is invalid
-
-                    @enderror form-control-xl" placeholder="Password">
+                    <input type="password" id="password" name="password" class="form-control @error('password') is invalid @enderror form-control-xl" placeholder="Password">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
                     @error('password')
-                        <small> class="btn btn-danger">{{ $message }}</small>
+                        <small class="btn btn-danger">{{ $message }}</small>
                     @enderror
                 </div>
                 <div class="form-check form-check-lg d-flex align-items-end mb-4">
@@ -105,7 +112,7 @@
 
             <div class="text-center mt-5 text-lg fs-4">
                 <p class="text-gray-600">Don't have an account? <a href="{{ route('register') }}" class="font-bold">Sign up</a>.</p>
-                <p><a class="font-bold" href="auth-forgot-password.html">Forgot password?</a>.</p>
+                <p><a class="font-bold" href="{{ route('password.request') }}">Forgot password?</a>.</p>
             </div>
         </div>
     </div>

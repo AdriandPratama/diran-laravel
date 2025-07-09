@@ -43,6 +43,8 @@
                 <th>Nama Robot</th>
                 <th>IP Address</th>
                 <th>Kapasitas Battery</th>
+                <th>Tanggal Dibuat</th>
+                <th>Terakhir Diperbarui</th>
                 @auth
                     @if(Auth::user()->role === 'admin')
                         <th>Aksi</th>
@@ -57,6 +59,9 @@
                     <td>{{ $battery->name }}</td>
                     <td>{{ $battery->ip }}</td>
                     <td>{{ $battery->battery }}</td>
+                    <td>{{ $battery->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
+                    <td>{{ $battery->updated_at->timezone('Asia/Jakarta')->format('d M Y, H:i:s') }}</td>
+
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <td>
@@ -110,7 +115,7 @@
                 @endauth
             @empty
                 <tr>
-                    <td colspan="5" class="text-center">Tidak ada data robot.</td>
+                    <td colspan="7" class="text-center">Tidak ada data robot.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -164,7 +169,7 @@
     }
 </style>
 
-<!-- Tambahkan Script Debug -->
+<!-- Debug Script -->
 <script>
     document.querySelectorAll('[data-bs-target^="#editModal"]').forEach(button => {
         button.addEventListener('click', () => {

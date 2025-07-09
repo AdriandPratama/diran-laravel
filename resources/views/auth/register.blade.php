@@ -96,13 +96,7 @@
                     </div>
 
                     <!-- Tambahan Dropdown Role -->
-                    <div class="form-group mt-3">
-                        <label for="role">Role</label>
-                        <select name="role" class="form-control" required>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+
 
                     <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>
                 </form>

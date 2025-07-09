@@ -23,3 +23,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/rfid-location', [RFIDController::class, 'apiStore']);
 Route::post('/rfid-battery', [BatteryController::class, 'apiStore']);
+Route::post('/datalog', [App\Http\Controllers\DataLogController::class, 'apiStore']);
