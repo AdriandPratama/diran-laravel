@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <!-- Tambahkan Font Awesome untuk ikon robot -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Auto refresh setiap 10 detik -->
+<meta http-equiv="refresh" content="10">
+
 
 </head>
 
@@ -319,7 +322,14 @@
                 <p><strong>IP:</strong> {{ $data['ip'] }}</p>
                 <p><strong>Posisi:</strong> {{ $data['location'] }}</p>
                 <p><strong>Tag RFID:</strong> {{ $data['tag'] }}</p>
-                <p><strong>Battery:</strong> {{ $data['battery'] }}%</p>
+               <p><strong>Battery:</strong> {{ $data['battery'] }}%</p>
+<p><strong>Data diterima:</strong>
+    {{ \Carbon\Carbon::parse($data['created_at'])->diffInMinutes(now()) < 1
+        ? 'Baru saja'
+        : \Carbon\Carbon::parse($data['created_at'])->diffForHumans()
+    }}
+</p>
+
             </div>
         @endforeach
     </div>

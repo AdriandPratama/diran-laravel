@@ -17,10 +17,11 @@ class DashboardController extends Controller
     try {
         // Ambil data robot terakhir per IP dari tabel 'robots'
         $latestRobots = Robot::select('robots.*')
-            ->join(DB::raw('(SELECT ip, MAX(created_at) as latest FROM robots GROUP BY ip) as sub'), function($join) {
-                $join->on('robots.ip', '=', 'sub.ip')
-                     ->on('robots.created_at', '=', 'sub.latest');
-            })
+        ->join(DB::raw('(SELECT ip, MAX(updated_at) as latest FROM robots GROUP BY ip) as sub'), function($join) {
+    $join->on('robots.ip', '=', 'sub.ip')
+         ->on('robots.updated_at', '=', 'sub.latest');
+})
+
             ->get();
 
         $mergedData = collect();
@@ -38,6 +39,7 @@ class DashboardController extends Controller
                 'location' => $location,
                 'battery' => $battery,
                 'tag' => $robot->tag ?? '-',
+                'created_at' => $robot->created_at,
             ]);
 
             // Masukkan ke robot list (untuk visual track)

@@ -25,18 +25,23 @@ class DataLogController extends Controller
 
         try {
             // Simpan ke tabel robots
-            Robot::create([
-                'name' => $request->name,
-                'ip' => $request->ip,
-                'location' => $request->location,
-                'tag' => $request->tag,
-            ]);
+         Robot::create([
+    'name' => $request->name,
+    'ip' => $request->ip,
+    'location' => $request->location,
+    'tag' => $request->tag,
+    'created_at' => now(),
+    'updated_at' => now(),
+]);
+
 
             // Simpan ke tabel battery
             $battery = Battery::create([
                 'name' => $request->name,
                 'ip' => $request->ip,
                 'battery' => $request->battery,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             // Kirim notifikasi jika baterai rendah
@@ -55,31 +60,35 @@ class DataLogController extends Controller
     }
 
     // Web: Tampilkan DataLog Gabungan (1 baris per IP)
-   public function index()
+public function index()
 {
-    $dataLogs = DB::table('robots')
-        ->leftJoin('battery', function($join) {
-            $join->on('robots.ip', '=', 'battery.ip')
-                 ->whereColumn('robots.created_at', '=', 'battery.created_at'); // opsional: jika ingin 1-to-1 cocokkan per waktu
+    $dataLogs = DB::table('robots as r')
+        ->join(DB::raw('(SELECT ip, MAX(updated_at) as latest_robot FROM robots GROUP BY ip) as latest_r'), function ($join) {
+            $join->on('r.ip', '=', 'latest_r.ip')
+                 ->on('r.updated_at', '=', 'latest_r.latest_robot');
         })
+        ->leftJoin(DB::raw('(SELECT ip, battery, updated_at as latest_battery FROM battery WHERE (ip, updated_at) IN (
+            SELECT ip, MAX(updated_at) FROM battery GROUP BY ip
+        )) as b'), function ($join) {
+            $join->on('r.ip', '=', 'b.ip');
+        })
+        ->leftJoin('rfid_mappings as map', 'r.tag', '=', 'map.tag') // ✅ tambahkan ini
         ->select(
-            'robots.id as robot_id',
-            'robots.name',
-            'robots.ip',
-            'robots.location',
-            'robots.tag',
-            'robots.created_at as robot_created',
-            'robots.updated_at as robot_updated',
-            'battery.battery',
-            'battery.id as battery_id',
-            'battery.created_at as battery_created',
-            'battery.updated_at as battery_updated'
+            'r.id as robot_id',
+            'r.name',
+            'r.ip',
+            'map.location_label as location', // ✅ ganti ini jadi dari mapping
+            'r.tag',
+            'r.created_at as robot_created',
+            'r.updated_at as robot_updated',
+            'b.battery',
+            'b.latest_battery as battery_updated'
         )
-        ->orderByDesc('robots.created_at')
         ->get();
 
     return view('dashboard.datalog', compact('dataLogs'));
 }
+
 
 
 
@@ -95,18 +104,23 @@ class DataLogController extends Controller
         ]);
 
         try {
-            Robot::create([
-                'name' => $request->name,
-                'ip' => $request->ip,
-                'location' => $request->location,
-                'tag' => $request->tag,
-            ]);
+         Robot::create([
+    'name' => $request->name,
+    'ip' => $request->ip,
+    'location' => $request->location,
+    'tag' => $request->tag,
+    'created_at' => now(),
+    'updated_at' => now(),
+]);
+
 
             if ($request->filled('battery')) {
                 $battery = Battery::create([
                     'name' => $request->name,
                     'ip' => $request->ip,
                     'battery' => $request->battery,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 if ($battery->battery < 20) {
